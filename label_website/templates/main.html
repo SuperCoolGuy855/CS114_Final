@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Label Dataset</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <style>
+        p.content {
+            text-align: justify;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 style="text-align: center;" id="title">Placeholder</h1>
+        <p id="cat"></p>
+        <p><strong>Link: </strong><a id="website" rel="noopener noreferrer" target="_blank"></a></p>
+        <p class="content" id="content">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+            dolore magna aliqua. Turpis tincidunt id aliquet risus feugiat in ante metus. Aliquet risus feugiat in ante
+            metus. Orci phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor. Duis ultricies lacus
+            sed turpis tincidunt id aliquet. Habitant morbi tristique senectus et netus. Non sodales neque sodales ut.
+            Id porta nibh venenatis cras. Metus aliquam eleifend mi in nulla. Est ante in nibh mauris cursus mattis
+            molestie. In nibh mauris cursus mattis molestie a iaculis. Viverra vitae congue eu consequat ac felis donec
+            et. Id aliquet lectus proin nibh nisl. Ullamcorper eget nulla facilisi etiam dignissim diam. Amet massa
+            vitae tortor condimentum lacinia quis. Placerat vestibulum lectus mauris ultrices.
+        </p> 
+        <p id="remain"></p>
+        <strong>Có nhạy cảm không:</strong>
+        <button class="btn btn-success" onclick="submit_data('yes')">Có</button>
+        <button class="btn btn-danger" onclick="submit_data('no')">Không</button>
+        <button class="btn btn-warning" onclick="submit_data('unknown')">Xàm</button>
+        <button class="btn btn-info"  onclick="get_data()">Bỏ qua</button>
+    </div>
+
+    <script>
+        async function submit_data(label) {
+            var data = new FormData();
+            data.append("id", current_id);
+            data.append("label", label);
+
+            await fetch("/submit", {method: "post", body: data});
+            await get_data();
+        }
+
+        var current_id = -1;
+        async function get_data() {
+            const response = await fetch("/get_data");
+            const data = await response.json();
+
+            const title_header = document.getElementById("title");
+            const cat_text = document.getElementById("cat");
+            const content_text = document.getElementById("content");
+            const remain_text = document.getElementById("remain");
+            const website_link_ele = document.getElementById("website")
+
+            title_header.innerHTML = data["title"];
+            cat_text.innerHTML = "<strong>Thể loại: </strong>" + data["cat"];
+            content_text.innerHTML = data["content"];
+            remain_text.innerHTML = "<strong>Số lượng: </strong>" + data["remain"];
+            current_id = data["id"];
+
+            website_link_ele.setAttribute("href", data["url"])
+            website_link_ele.innerHTML = data["url"]
+
+        }
+        get_data();
+    </script>
+</body>
+
+</html>
